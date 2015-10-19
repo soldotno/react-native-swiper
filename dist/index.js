@@ -172,11 +172,20 @@ exports['default'] = _reactNative2['default'].createClass({
       autoplayEnd: false
     };
 
+    initState.total = props.children ? props.children.length || 1 : 0;
+
+    initState.index = initState.total > 1 ? Math.min(props.index, initState.total - 1) : 0;
+
     // Default: horizontal
     initState.dir = props.horizontal == false ? 'y' : 'x';
     initState.width = props.width || width;
     initState.height = props.height || height;
     initState.offset = {};
+
+    if (initState.total > 1) {
+      var setup = props.loop ? 1 : initState.index;
+      initState.offset[initState.dir] = initState.dir == 'y' ? initState.height * setup : initState.width * setup;
+    }
 
     return initState;
   },
@@ -189,23 +198,6 @@ exports['default'] = _reactNative2['default'].createClass({
 
   componentWillMount: function componentWillMount() {
     this.props = this.injectState(this.props);
-  },
-
-  componentWillReceiveProps: function componentWillReceiveProps(newProps) {
-    var newState = {};
-
-    newState.total = newProps.children ? newProps.children.length || 1 : 0;
-
-    newState.index = newState.total > 1 ? Math.min(this.props.index, newState.total - 1) : 0;
-
-    newState.offset = {};
-
-    if (newState.total > 1) {
-      var setup = this.props.loop ? 1 : newState.index;
-      newState.offset[this.state.dir] = this.state.dir == 'y' ? this.state.height * setup : this.state.width * setup;
-    }
-
-    this.setState(newState);
   },
 
   componentDidMount: function componentDidMount() {
@@ -376,64 +368,46 @@ exports['default'] = _reactNative2['default'].createClass({
     ) : null;
   },
 
-  renderNextButton: function renderNextButton() {
+  renderButtons: function renderButtons() {
     var _this4 = this;
 
-    var button = undefined;
-
-    if (this.props.loop || this.state.index != this.state.total - 1) {
-      button = this.props.nextButton || _reactNative2['default'].createElement(
-        _reactNative.Text,
-        { style: styles.buttonText },
-        '›'
-      );
-    }
-
-    return _reactNative2['default'].createElement(
-      _reactNative.TouchableOpacity,
-      { onPress: function () {
-          return button !== null && _this4.scrollTo.call(_this4, 1);
-        } },
-      _reactNative2['default'].createElement(
-        _reactNative.View,
-        null,
-        button
-      )
+    var nextButton = this.props.nextButton || _reactNative2['default'].createElement(
+      _reactNative.Text,
+      { style: [styles.buttonText, { color: !this.props.loop && this.state.index == this.state.total - 1 ? 'rgba(0,0,0,0)' : '#007aff' }] },
+      '›'
     );
-  },
 
-  renderPrevButton: function renderPrevButton() {
-    var _this5 = this;
-
-    var button = null;
-
-    if (this.props.loop || this.state.index != 0) {
-      button = this.props.prevButton || _reactNative2['default'].createElement(
-        _reactNative.Text,
-        { style: styles.buttonText },
-        '‹'
-      );
-    }
-
-    return _reactNative2['default'].createElement(
-      _reactNative.TouchableOpacity,
-      { onPress: function () {
-          return button !== null && _this5.scrollTo.call(_this5, -1);
-        } },
-      _reactNative2['default'].createElement(
-        _reactNative.View,
-        null,
-        button
-      )
+    var prevButton = this.props.prevButton || _reactNative2['default'].createElement(
+      _reactNative.Text,
+      { style: [styles.buttonText, { color: !this.props.loop && this.state.index == 0 ? 'rgba(0,0,0,0)' : '#007aff' }] },
+      '‹'
     );
-  },
 
-  renderButtons: function renderButtons() {
     return _reactNative2['default'].createElement(
       _reactNative.View,
       { pointerEvents: 'box-none', style: [styles.buttonWrapper, { width: this.state.width, height: this.state.height }, this.props.buttonWrapperStyle] },
-      this.renderPrevButton(),
-      this.renderNextButton()
+      _reactNative2['default'].createElement(
+        _reactNative.TouchableOpacity,
+        { onPress: function () {
+            return !(!_this4.props.loop && _this4.state.index == 0) && _this4.scrollTo.call(_this4, -1);
+          } },
+        _reactNative2['default'].createElement(
+          _reactNative.View,
+          null,
+          prevButton
+        )
+      ),
+      _reactNative2['default'].createElement(
+        _reactNative.TouchableOpacity,
+        { onPress: function () {
+            return !(!_this4.props.loop && _this4.state.index == _this4.state.total - 1) && _this4.scrollTo.call(_this4, 1);
+          } },
+        _reactNative2['default'].createElement(
+          _reactNative.View,
+          null,
+          nextButton
+        )
+      )
     );
   },
 
@@ -443,7 +417,7 @@ exports['default'] = _reactNative2['default'].createClass({
    * @return {object} props injected props
    */
   injectState: function injectState(props) {
-    var _this6 = this;
+    var _this5 = this;
 
     /*    const scrollResponders = [
           'onMomentumScrollBegin',
@@ -459,7 +433,7 @@ exports['default'] = _reactNative2['default'].createClass({
         (function () {
           var originResponder = props[prop];
           props[prop] = function (e) {
-            return originResponder(e, _this6.state, _this6);
+            return originResponder(e, _this5.state, _this5);
           };
         })();
       }
