@@ -20,7 +20,7 @@ import React, {
 // throwing an exception.
 import TimerMixin from 'react-timer-mixin'
 
-let { width, height } = Dimensions.get('window')
+let { width, height } = Dimensions.get('window');
 
 /**
  * Default styles
