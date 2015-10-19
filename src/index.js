@@ -162,11 +162,26 @@ export default React.createClass({
       autoplayEnd: false,
     }
 
+    initState.total = props.children
+      ? (props.children.length || 1)
+      : 0
+
+    initState.index = initState.total > 1
+      ? Math.min(props.index, initState.total - 1)
+      : 0
+
     // Default: horizontal
     initState.dir = props.horizontal == false ? 'y' : 'x'
     initState.width = props.width || width
     initState.height = props.height || height
     initState.offset = {}
+
+    if(initState.total > 1) {
+      let setup = props.loop ? 1 : initState.index
+      initState.offset[initState.dir] = initState.dir == 'y'
+        ? initState.height * setup
+        : initState.width * setup
+    }
 
     return initState
   },
@@ -179,29 +194,6 @@ export default React.createClass({
 
   componentWillMount() {
     this.props = this.injectState(this.props)
-  },
-
-  componentWillReceiveProps(newProps) {
-    let newState = {}
-
-    newState.total = newProps.children
-      ? (newProps.children.length || 1)
-      : 0
-
-    newState.index = newState.total > 1
-      ? Math.min(this.props.index, newState.total - 1)
-      : 0
-
-    newState.offset = {}
-
-    if(newState.total > 1) {
-      let setup = this.props.loop ? 1 : newState.index
-      newState.offset[this.state.dir] = this.state.dir == 'y'
-        ? this.state.height * setup
-        : this.state.width * setup
-    }
-
-    this.setState(newState);
   },
 
   componentDidMount() {
@@ -377,43 +369,24 @@ export default React.createClass({
       : null
   },
 
-  renderNextButton() {
-    let button;
-
-    if (this.props.loop || this.state.index != this.state.total - 1) {
-      button = this.props.nextButton || <Text style={styles.buttonText}>›</Text>
-    }
-
-    return (
-      <TouchableOpacity onPress={() => button !== null && this.scrollTo.call(this, 1)}>
-        <View>
-          {button}
-        </View>
-      </TouchableOpacity>
-    )
-  },
-
-  renderPrevButton() {
-    let button = null
-
-    if (this.props.loop || this.state.index != 0) {
-       button = this.props.prevButton || <Text style={styles.buttonText}>‹</Text>
-    }
-
-    return (
-      <TouchableOpacity onPress={() => button !== null && this.scrollTo.call(this, -1)}>
-        <View>
-          {button}
-        </View>
-      </TouchableOpacity>
-    )
-  },
-
   renderButtons() {
+
+    let nextButton = this.props.nextButton || <Text style={[styles.buttonText, {color: !this.props.loop && this.state.index == this.state.total - 1 ? 'rgba(0,0,0,0)' : '#007aff'}]}>›</Text>
+
+    let prevButton = this.props.prevButton || <Text style={[styles.buttonText, {color: !this.props.loop && this.state.index == 0 ? 'rgba(0,0,0,0)' : '#007aff'}]}>‹</Text>
+
     return (
       <View pointerEvents='box-none' style={[styles.buttonWrapper, {width: this.state.width, height: this.state.height}, this.props.buttonWrapperStyle]}>
-        {this.renderPrevButton()}
-        {this.renderNextButton()}
+        <TouchableOpacity onPress={() => !(!this.props.loop && this.state.index == 0) && this.scrollTo.call(this, -1)}>
+          <View>
+            {prevButton}
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => !(!this.props.loop && this.state.index == this.state.total - 1) && this.scrollTo.call(this, 1)}>
+          <View>
+            {nextButton}
+          </View>
+        </TouchableOpacity>
       </View>
     )
   },
