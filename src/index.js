@@ -6,6 +6,7 @@ react-native-swiper
  */
 import React, {
   StyleSheet,
+  Dimensions,
   Text,
   View,
   ScrollView,
@@ -18,7 +19,6 @@ import React, {
 // the component is unmounted, you risk the callback
 // throwing an exception.
 import TimerMixin from 'react-timer-mixin'
-import Dimensions from 'Dimensions'
 
 let { width, height } = Dimensions.get('window')
 
