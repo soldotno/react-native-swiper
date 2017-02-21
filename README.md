@@ -1,5 +1,7 @@
 # react-native-swiper
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/soldotno/react-native-swiper.svg)](https://greenkeeper.io/)
+
 [![npm version](http://img.shields.io/npm/v/react-native-swiper.svg?style=flat-square)](https://npmjs.org/package/react-native-swiper "View this project on npm")
 [![npm version](http://img.shields.io/npm/dm/react-native-swiper.svg?style=flat-square)](https://npmjs.org/package/react-native-swiper "View this project on npm")
 [![Issue Stats](http://issuestats.com/github/leecade/react-native-swiper/badge/pr?style=flat-square)](https://github.com/leecade/react-native-swiper/pulls?q=is%3Apr+is%3Aclosed)
